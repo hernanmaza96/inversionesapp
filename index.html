@@ -102,8 +102,8 @@ nav{grid-template-columns:repeat(5,1fr)}nav button{font-size:12px;padding:10px 0
     <label>Plazo (acciones y CEDEARs)</label><select id="pHz"><option value="mixto">Mixto (70% largo, 30% corto)</option><option value="largo">Largo plazo</option><option value="corto">Corto plazo</option></select>
     <p><button class="btn" id="pGo" style="width:100%">Armar mi cartera</button></p><div id="pOut"></div>
     <h3>Mis compras</h3><div id="eSum"></div><div id="eList"></div>
-    <h3>Meta del crucero 🚢</h3><div id="goalOut"></div>
-    <div class="grid2"><div><label>Nombre de la meta</label><input id="gName" placeholder="Crucero"></div><div><label>Cuánto necesitás (USDT)</label><input id="gTarget" type="number" inputmode="decimal"></div></div>
+    <h3>Mi meta</h3><div id="goalOut"></div>
+    <div class="grid2"><div><label>Nombre de la meta</label><input id="gName" placeholder="Ej: casa, viaje, auto…"></div><div><label>Cuánto necesitás (USDT)</label><input id="gTarget" type="number" inputmode="decimal"></div></div>
     <label>Ahorro aparte que ya tenés (USDT, opcional)</label><input id="gExtra" type="number" inputmode="decimal">
     <h3>Mi cartera en pesos</h3>
     <div class="grid2"><div><label>Qué dólar usar</label><select id="fxKind"><option value="blue">Blue</option><option value="bolsa">MEP</option><option value="oficial">Oficial</option><option value="cripto">Cripto</option><option value="manual">Otro (lo escribo)</option></select></div><div><label>Pesos por dólar</label><input id="fxRate" type="number" inputmode="decimal"></div></div>
@@ -180,6 +180,7 @@ nav{grid-template-columns:repeat(5,1fr)}nav button{font-size:12px;padding:10px 0
 <div id="inst"><span style="flex:1" id="instT"></span><button class="btn" id="instGo" style="padding:8px 14px">Instalar</button><button class="chip" id="instX">✕</button></div>
 <div id="ph" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:45"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;background:var(--bg);border:1px solid var(--line);border-radius:12px;max-height:80%;overflow:auto"><h3 style="margin:0 0 8px">Hay que permitir las notificaciones</h3><div id="phT" style="font-size:14px;line-height:1.5"></div><p><button class="btn" id="phX" style="width:100%">Entendido</button></p></div></div>
 <div id="hp" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:45"><div class="pad" style="position:absolute;left:12px;right:12px;top:8%;background:var(--bg);border:1px solid var(--line);border-radius:12px;max-height:84%;overflow:auto"><h3 style="margin:0 0 8px">Qué significa cada cosa</h3><div id="hpT" style="font-size:14px;line-height:1.5"></div><p><button class="btn" id="hpX" style="width:100%">Entendido</button></p></div></div>
+<div id="gm" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:45"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;background:var(--bg);border:1px solid var(--line);border-radius:12px"><h3 style="margin:0 0 8px">Mi meta</h3><label>¿Qué querés lograr?</label><input id="gmN" maxlength="30" placeholder="Ej: casa, viaje, auto…" autocomplete="off"><label>Cuánto necesitás (USDT)</label><input id="gmT" type="number" inputmode="decimal"><label>Ahorro aparte que ya tenés (USDT, opcional)</label><input id="gmE" type="number" inputmode="decimal"><div class="grid2" style="margin-top:12px"><button class="btn sec" id="gmD">Borrar meta</button><button class="btn" id="gmOk">Guardar</button></div><p style="margin:8px 0 0"><button class="btn sec" id="gmX" style="width:100%">Cerrar</button></p></div></div>
 <div id="nb"></div>
 <div id="toast"></div>
 
@@ -946,7 +947,7 @@ function portTot(){
 function goalHTML(){
   const g=LS.get('goal',{});if(!(g.target>0))return'';
   const T=portTot(),have=T.val+T.real+(g.extra||0),pct=Math.max(0,Math.min(100,have/g.target*100)),miss=Math.max(0,g.target-have),r=fxRate();
-  return`<div class="xc"><b>🚢 ${esc(g.name||'Mi meta')}</b><div class="bar"><i style="width:${pct}%;background:var(--up)"></i></div><small>Llevás <b>${fu(have)}</b> de ${fu(g.target)} USDT (${pct.toFixed(0)}%)${miss>0?' · faltan '+fu(miss)+(r?' ≈ $'+fu(miss*r):''):' · ¡meta lograda! 🎉'}</small></div>`;
+  return`<div class="xc" data-goal="1"><b>${esc(g.name||'Mi meta')}</b><div class="bar"><i style="width:${pct}%;background:var(--up)"></i></div><small>Llevás <b>${fu(have)}</b> de ${fu(g.target)} USDT (${pct.toFixed(0)}%)${miss>0?' · faltan '+fu(miss)+(r?' ≈ $'+fu(miss*r):''):' · ¡meta lograda! 🎉'}</small></div>`;
 }
 function renderExtra(){
   const T=portTot(),r=fxRate(),cl=v=>v>=0?'up':'dn';
@@ -1080,7 +1081,7 @@ function renderHoy(skip){
   const lb=LS.get('lastBk',0);
   if(T.inv>0&&(!lb||Date.now()-lb>2592e6))h+='<div class="xc" data-go="cfg" style="border-color:var(--warn)">💾 <b>Hacé un respaldo de tus compras</b><br><small>Si borrás los datos del navegador se pierden. Tocá acá para guardarlo.</small></div>';
   if(T.inv>0)h+=`<div class="xc" data-go="port"><small>Mi cartera</small><br><b style="font-size:17px">${fu(T.val)} USDT</b>${r?` <span class="mut">≈ $${fu(T.val*r)}</span>`:''}<br><b class="${cl(T.pl)}">${fsg(T.pl)} USDT (${T.inv?fpct(T.pl/T.inv*100):''})</b>${T.ok?'':' <small>· cargando precios…</small>'}</div>`;
-  h+=goalHTML();
+  h+=goalHTML()||'<div class="xc" data-goal="1"><b>Poné tu meta</b><br><small>Lo que quieras lograr (una casa, un viaje, un auto…) y ves cuánto te falta. Tocá acá para armarla.</small></div>';
   if(rows.length){
     h+='<h3>Mis vigilados <small class="hp" data-help="1">¿qué significa?</small></h3>';
     h+=rows.map(({s,h:x})=>{
@@ -1092,7 +1093,13 @@ function renderHoy(skip){
   $('#hoyBox').innerHTML=h+'<p><small>Herramienta de apoyo, no una recomendación de inversión.</small></p>';
   if(!skip){hoyLoad();const ks=Object.keys(entries()).filter(k=>buys(k).length);if(ks.length)pxLoad(ks).then(()=>{if($('#v-hoy').classList.contains('on'))renderHoy(true)})}
 }
+function openGoal(){const g=LS.get('goal',{});$('#gmN').value=g.name||'';$('#gmT').value=g.target||'';$('#gmE').value=g.extra||'';$('#gm').style.display='block'}
+$('#gmX').onclick=()=>{$('#gm').style.display='none'};
+$('#gmOk').onclick=()=>{const t=+$('#gmT').value;if(!(t>0)){toast('Poné cuánto necesitás');return}LS.set('goal',{name:$('#gmN').value.trim(),target:t,extra:+$('#gmE').value||0});$('#gm').style.display='none';renderExtra();renderHoy(true);toast('Meta guardada ✓')};
+$('#gmD').onclick=()=>{LS.set('goal',{});$('#gm').style.display='none';renderExtra();renderHoy(true)};
+$('#goalOut').onclick=e=>{if(e.target.closest('[data-goal]'))openGoal()};
 $('#hoyBox').onclick=e=>{
+  if(e.target.closest('[data-goal]')){openGoal();return}
   if(e.target.closest('[data-help]')){showHelp();return}
   const g=e.target.closest('[data-go]');if(g){showView(g.dataset.go);return}
   const r=e.target.closest('.row[data-s]');if(r)openAsset(r.dataset.cat,r.dataset.s,'1D');
