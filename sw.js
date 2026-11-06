@@ -1,5 +1,5 @@
-const CACHE = 'radar-v6';
-const SHELL = ['./', 'index.html', 'analysis.js', 'manifest.json', 'icon-512.png', 'badge.png'];
+const CACHE = 'corazonada-v9';
+const SHELL = ['./', 'index.html', 'analysis.js', 'manifest.json', 'icon-512.png', 'icon-192.png', 'badge.png'];
 const CDN = 'https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';
 
 self.addEventListener('install', e => {
@@ -40,8 +40,8 @@ self.addEventListener('fetch', e => {
 self.addEventListener('push', e => {
   let d = {}; try { d = e.data.json(); } catch (_) {}
   const urgent = /^(🔻|🚀)/.test(d.title || '');
-  e.waitUntil(self.registration.showNotification(d.title || 'Radar de Mercado', {
-    body: d.body || '', tag: d.tag || 'radar', renotify: true, requireInteraction: urgent,
+  e.waitUntil(self.registration.showNotification(d.title || 'Corazonada', {
+    body: d.body || '', tag: d.tag || 'corazonada', renotify: true, requireInteraction: urgent,
     icon: 'icon-512.png', badge: 'badge.png', vibrate: urgent ? [400, 150, 400, 150, 700] : [250, 120, 250],
     timestamp: Date.now(), actions: [{ action: 'open', title: 'Ver gráfico' }], data: { a: d.a }
   }));

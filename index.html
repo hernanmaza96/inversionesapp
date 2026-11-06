@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-512.png">
-<title>Radar de Mercado</title>
+<title>Corazonada</title>
 <style>
 :root{--bg:#0b0e14;--panel:#131722;--line:#2a2e39;--tx:#d1d4dc;--mut:#787b86;--up:#16c784;--dn:#ea3943;--acc:#2962ff;--warn:#f5a623}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -61,6 +61,20 @@ small{color:var(--mut)}
 #inst{position:fixed;left:10px;right:10px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:30;display:none;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
 #nb{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 10px);background:#1e222d;border:1px solid var(--line);border-left:5px solid #2962ff;border-radius:10px;padding:12px 14px;z-index:35;display:none;font-size:13px;box-shadow:0 8px 28px rgba(0,0,0,.6)}
 #onb{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0 4px}
+.gh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:16px 12px 6px;border-bottom:1px solid var(--line)}
+.dnut{position:relative;width:132px;height:132px;flex:0 0 auto}
+.dnut svg{transform:rotate(-90deg)}
+.dnut-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.25}
+.lg{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px}
+.lg i{width:10px;height:10px;border-radius:50%;flex:0 0 auto;margin-top:4px}
+#top{padding:4px 10px;gap:8px}#symBtn{font-size:15px;padding:3px 8px}#price{font-size:16px}#star{font-size:20px}
+#tfbar{padding:0 10px 4px}#tfbar .chip{padding:3px 10px;font-size:12px}
+#info{padding:4px 10px 5px;font-size:12px;min-height:0;line-height:1.3;max-height:86px;overflow:auto}
+nav{grid-template-columns:repeat(5,1fr)}nav button{font-size:12px;padding:10px 0}
+.xc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0}
+.sem{font-size:22px}.hp{cursor:pointer;text-decoration:underline dotted}
+.plan{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.plan .grow{flex:1}
 </style>
 </head>
 <body>
@@ -72,7 +86,8 @@ small{color:var(--mut)}
 <div id="tfbar"></div>
 <div id="info">Cargando…</div>
 <div id="views">
-  <div id="v-chart" class="view on"><div id="status"></div><div id="chartBox"></div><button id="resetBtn" title="Reajustar gráfico">⟳</button><button id="buyBtn" title="Anotar mi precio de compra">💰</button></div>
+  <div id="v-hoy" class="view on"><div class="pad" id="hoyBox"></div></div>
+  <div id="v-chart" class="view"><div id="status"></div><div id="chartBox"></div><button id="resetBtn" title="Reajustar gráfico">⟳</button><button id="buyBtn" title="Anotar mi precio de compra">💰</button></div>
   <div id="v-scan" class="view"><div class="pad">
     <div class="grid2">
       <div><label>Mercado</label><select id="scCat"><option value="crypto">Cripto top 50</option><option value="stocks">Acciones</option><option value="etfs">ETFs</option><option value="cedears">CEDEARs</option></select></div>
@@ -86,7 +101,14 @@ small{color:var(--mut)}
     <div class="grid2"><div><label>Cuánto vas a invertir</label><input id="pAmt" type="number" inputmode="decimal" min="0"></div><div><label>Qué querés comprar</label><select id="pMk"><option value="crypto">Criptomonedas</option><option value="stocks">Acciones y CEDEARs</option></select></div></div>
     <label>Plazo (acciones y CEDEARs)</label><select id="pHz"><option value="mixto">Mixto (70% largo, 30% corto)</option><option value="largo">Largo plazo</option><option value="corto">Corto plazo</option></select>
     <p><button class="btn" id="pGo" style="width:100%">Armar mi cartera</button></p><div id="pOut"></div>
-    <h3>Mis compras</h3><div id="eList"></div>
+    <h3>Mis compras</h3><div id="eSum"></div><div id="eList"></div>
+    <h3>Meta del crucero 🚢</h3><div id="goalOut"></div>
+    <div class="grid2"><div><label>Nombre de la meta</label><input id="gName" placeholder="Crucero"></div><div><label>Cuánto necesitás (USDT)</label><input id="gTarget" type="number" inputmode="decimal"></div></div>
+    <label>Ahorro aparte que ya tenés (USDT, opcional)</label><input id="gExtra" type="number" inputmode="decimal">
+    <h3>Mi cartera en pesos</h3>
+    <div class="grid2"><div><label>Qué dólar usar</label><select id="fxKind"><option value="blue">Blue</option><option value="bolsa">MEP</option><option value="oficial">Oficial</option><option value="cripto">Cripto</option><option value="manual">Otro (lo escribo)</option></select></div><div><label>Pesos por dólar</label><input id="fxRate" type="number" inputmode="decimal"></div></div>
+    <div id="fxOut"></div>
+    <h3>Ventas y ganancia realizada</h3><div id="saleOut"></div>
   </div></div>
   <div id="v-cfg" class="view"><div class="pad">
     <h3>Notificaciones</h3>
@@ -123,6 +145,16 @@ small{color:var(--mut)}
       <div><label>Período</label><input id="cBbLen" type="number"></div>
       <div><label>Desviaciones</label><input id="cBbMult" type="number" step="0.1"></div>
     </div>
+    <h3>Avisos de mi cartera</h3>
+    <label><input id="cPort" type="checkbox" style="width:auto;margin-right:8px">Avisarme cuando una compra mía sube mucho o cae mucho</label>
+    <div class="grid2"><div><label>Avisar si gana (%)</label><input id="cGain" type="number"></div><div><label>Avisar si pierde (%)</label><input id="cLoss" type="number"></div></div>
+    <h3>Mis alertas de precio</h3><div id="palList"></div>
+    <small>Estos avisos llegan con la app abierta o en segundo plano. Para crear uno: 💰 en el gráfico, poné el precio y tocá "🔔 Avisarme".</small>
+    <h3>Respaldo de mis datos</h3>
+    <small id="bkInfo"></small>
+    <div class="grid2" style="margin-top:8px"><button class="btn" id="bkExp">💾 Guardar archivo</button><button class="btn sec" id="bkCopy">📋 Copiar</button><button class="btn sec" id="bkFileB">📂 Restaurar archivo</button><button class="btn sec" id="bkPaste">📥 Restaurar pegando</button></div>
+    <input id="bkFile" type="file" accept=".json,application/json" style="display:none">
+    <small>Incluye compras, ventas, vigilados, alertas, meta y ajustes (no tu clave de Twelve Data).</small>
     <h3>Activos vigilados ★</h3>
     <div id="starList"></div>
     <p><small>Lógica: las líneas verdes son zonas de compra y las rojas de venta. Se detectan por rebotes del precio (a dos escalas, contando el mínimo reciente), por volumen operado y por números redondos. Más estrellas y más grosor significan una zona más fuerte; las débiles salen finas y sin etiqueta de precio. El puntaje (0 a 100) suma 4 cosas: cercanía a una zona fuerte, posición en las Bandas de Bollinger, distancia al máximo reciente y RSI. La señal del Buy Sell Signal queda como confirmación. Es una herramienta de apoyo, no una recomendación de inversión: ninguna zona garantiza que el precio rebote.</small></p>
@@ -130,7 +162,8 @@ small{color:var(--mut)}
   </div></div>
 </div>
 <nav>
-  <button data-v="chart" class="on">Gráfico</button>
+  <button data-v="hoy" class="on">Hoy</button>
+  <button data-v="chart">Gráfico</button>
   <button data-v="scan">Escáner</button>
   <button data-v="port">Cartera</button>
   <button data-v="cfg">Ajustes</button>
@@ -142,10 +175,11 @@ small{color:var(--mut)}
   </div>
   <div id="sheetL"></div>
 </div></div>
-<div id="ent" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:25"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;max-height:80%;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:12px"><h3 id="entT" style="margin:0 0 8px"></h3><div id="entL"></div><label>Precio de esta compra</label><input id="entP" type="number" step="any" inputmode="decimal"><label>Monto invertido (opcional, mejora el promedio)</label><input id="entA" type="number" step="any" inputmode="decimal"><div class="grid2" style="margin-top:12px"><button class="btn sec" id="entX">Cerrar</button><button class="btn" id="entOk">Agregar compra</button></div></div></div>
-<div id="onb"><div class="pad" style="max-width:480px;margin:0 auto;padding-top:24px"><h2 style="margin:0 0 4px">Bienvenido a Radar</h2><small>Contanos un poco para personalizar los avisos. No pedimos DNI, mail ni datos bancarios: se guardan en tu teléfono. Si activás los avisos, tu nombre, los activos que vigilás y tus ajustes también se guardan en el servidor, solo para poder mandarte las notificaciones.</small><label>Tu nombre (opcional)</label><input id="oName" maxlength="30" autocomplete="off"><div id="oGroups"></div><label>Cuánto pensás invertir</label><input id="oAmt" type="number" inputmode="decimal"><p><button class="btn" id="oGo" style="width:100%">Empezar</button></p></div></div>
+<div id="ent" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:25"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;max-height:80%;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:12px"><h3 id="entT" style="margin:0 0 8px"></h3><div id="entL"></div><div id="entPlanBox"><label>Plan en partes: monto para este activo (USDT)</label><input id="entB" type="number" step="any" inputmode="decimal" placeholder="Ej: 300"><div id="entPlan"></div></div><label>Precio (compra, venta o aviso)</label><input id="entP" type="number" step="any" inputmode="decimal"><label>Monto en USDT (compra: lo invertido · venta: lo que vendiste)</label><input id="entA" type="number" step="any" inputmode="decimal" placeholder="Ej: 25"><div class="grid2" style="margin-top:12px"><button class="btn sec" id="entX">Cerrar</button><button class="btn" id="entOk">Agregar compra</button></div><div class="grid2" style="margin-top:8px"><button class="btn sec" id="entSell">Registrar venta</button><button class="btn sec" id="entAl">🔔 Avisarme</button></div></div></div>
+<div id="onb"><div class="pad" style="max-width:480px;margin:0 auto;padding-top:24px"><h2 style="margin:0 0 4px">Bienvenido a Corazonada</h2><small>Contanos un poco para personalizar los avisos. No pedimos DNI, mail ni datos bancarios: se guardan en tu teléfono. Si activás los avisos, tu nombre, los activos que vigilás y tus ajustes también se guardan en el servidor, solo para poder mandarte las notificaciones.</small><label>Tu nombre (opcional)</label><input id="oName" maxlength="30" autocomplete="off"><div id="oGroups"></div><label>Cuánto pensás invertir</label><input id="oAmt" type="number" inputmode="decimal"><p><button class="btn" id="oGo" style="width:100%">Empezar</button></p></div></div>
 <div id="inst"><span style="flex:1" id="instT"></span><button class="btn" id="instGo" style="padding:8px 14px">Instalar</button><button class="chip" id="instX">✕</button></div>
 <div id="ph" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:45"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;background:var(--bg);border:1px solid var(--line);border-radius:12px;max-height:80%;overflow:auto"><h3 style="margin:0 0 8px">Hay que permitir las notificaciones</h3><div id="phT" style="font-size:14px;line-height:1.5"></div><p><button class="btn" id="phX" style="width:100%">Entendido</button></p></div></div>
+<div id="hp" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:45"><div class="pad" style="position:absolute;left:12px;right:12px;top:8%;background:var(--bg);border:1px solid var(--line);border-radius:12px;max-height:84%;overflow:auto"><h3 style="margin:0 0 8px">Qué significa cada cosa</h3><div id="hpT" style="font-size:14px;line-height:1.5"></div><p><button class="btn" id="hpX" style="width:100%">Entendido</button></p></div></div>
 <div id="nb"></div>
 <div id="toast"></div>
 
@@ -369,7 +403,7 @@ if(typeof module==="object"&&module.exports)module.exports=API;else Object.assig
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}if(/^(stars|cfg|entries|profile)$/.test(k))syncSoon()}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const DEF={fast:5,slow:13,atr:14,slm:0.5,rr:3,confirm:true,swing:10,bbLen:20,bbMult:2,prox:0.5,minScore:55,zonesN:6,aNear:true,aBreak:true,alertTfs:['1D','1sem'],td:''};
+const DEF={fast:5,slow:13,atr:14,slm:0.5,rr:3,confirm:true,swing:10,bbLen:20,bbMult:2,prox:0.5,minScore:55,zonesN:6,aNear:true,aBreak:true,alertTfs:['1D','1sem'],td:'',aPort:true,gain:20,loss:15};
 let CFG=Object.assign({},DEF,LS.get('cfg',{}));
 const saveCfg=()=>LS.set('cfg',CFG);
 const TFS=[['1seg','1s','1s'],['1m','1m','1min'],['5m','5m','5min'],['15m','15m','15min'],['30m','30m','30min'],['1h','1h','1h'],['2h','2h','2h'],['4h','4h','4h'],['1D','1d','1day'],['1sem','1w','1week']];
@@ -518,6 +552,7 @@ function renderInfo(){
   const bl=buys(ek()),l2=S.candles[S.candles.length-1];
   if(bl.length&&l2){const av=avgBuy(ek());h+=`<br><b>${bl.length>1?'Mis compras ('+bl.length+') · promedio':'Mi compra'} ${fp(av)}: <span class="${l2.close>=av?'up':'dn'}">${fpct((l2.close-av)/av*100)}</span></b>`}
   if(A.St&&/^break/.test(A.St.stage)){const m=stageMsg(disp(S.cat,S.sym),S.tf,A,{hi:1});if(m)h+=`<br><b class="${A.St.stage==='breakdown'?'dn':'up'}">${m[0]}</b>`}
+  h=`<b>👉 ${phraseOf(Z.zone,A.St&&A.St.stage)}</b> <span class="mut hp" data-help="1">¿qué significa?</span><br>`+h;
   el.innerHTML=h;
 }
 function closeFeeds(){if(S.ws){S.ws.onclose=null;try{S.ws.close()}catch(e){}S.ws=null}clearInterval(S.poll);S.poll=null}
@@ -548,7 +583,7 @@ async function loadChart(){
 function openAsset(cat,sym,tf){
   S.cat=cat;S.sym=sym;if(tf)S.tf=tf;
   $('#symBtn').textContent=disp(cat,sym)+' ▾';
-  renderTfs();updateStar();showView('chart');loadChart();
+  renderTfs();updateStar();S.loaded=1;showView('chart');loadChart();
 }
 
 /* ---------- temporalidades / vistas ---------- */
@@ -561,6 +596,8 @@ function showView(v){
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   $('#tfbar').style.display=$('#info').style.display=$('#top').style.display=(v==='chart')?'':'none';
+  if(v==='hoy')renderHoy();
+  if(v==='chart'&&!S.loaded){S.loaded=1;loadChart()}
   if(v==='cfg')renderCfg();
   if(v==='port')renderPort();
   if(v==='chart'&&S.cat==='crypto'&&!S.ws&&S.candles.length)openWS();
@@ -597,7 +634,7 @@ const iosDev=/iphone|ipad|ipod/i.test(navigator.userAgent);
 function showInst(){
   if(isStd()||Date.now()-LS.get('instNo',0)<6048e5)return;
   $('#instGo').style.display=instEv?'':'none';
-  $('#instT').textContent=instEv?'📲 Instalá Radar en tu celular y abrila como una app':'📲 Para instalar: en Safari tocá Compartir ⬆️ y "Agregar a pantalla de inicio"';
+  $('#instT').textContent=instEv?'📲 Instalá Corazonada en tu celular y abrila como una app':'📲 Para instalar: en Safari tocá Compartir ⬆️ y "Agregar a pantalla de inicio"';
   $('#inst').style.display='flex';
 }
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;showInst()});
@@ -661,7 +698,7 @@ function swipeDismiss(el){
 swipeDismiss($('#nb'));swipeDismiss($('#toast'));
 function permHelp(){
   const loc=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-  $('#phT').innerHTML='<p><b>Si usás la app instalada:</b><br>Ajustes del celular → Aplicaciones → Radar → Notificaciones → Permitir.</p><p><b>Si estás en Chrome:</b><br>tocá el ícono ⓘ (o el candado) al lado de la dirección → Permisos → Notificaciones → Permitir, y recargá la página.</p>'+(loc?'<p><b>Ojo:</b> estás en una copia local (localhost). Los avisos con la app cerrada solo funcionan en la app instalada desde tu link de Vercel.</p>':'');
+  $('#phT').innerHTML='<p><b>Si usás la app instalada:</b><br>Ajustes del celular → Aplicaciones → Corazonada → Notificaciones → Permitir.</p><p><b>Si estás en Chrome:</b><br>tocá el ícono ⓘ (o el candado) al lado de la dirección → Permisos → Notificaciones → Permitir, y recargá la página.</p>'+(loc?'<p><b>Ojo:</b> estás en una copia local (localhost). Los avisos con la app cerrada solo funcionan en la app instalada desde tu link de Vercel.</p>':'');
   $('#ph').style.display='block';
 }
 $('#phX').onclick=()=>{$('#ph').style.display='none'};
@@ -670,7 +707,7 @@ async function notify(title,body,tag,a){
   try{
     if('Notification' in window&&Notification.permission==='granted'){
       const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration(),urgent=/^(🔻|🚀)/.test(title);
-      const o={body,tag:tag||'radar',renotify:true,requireInteraction:urgent,icon:'icon-512.png',badge:'badge.png',vibrate:urgent?[400,150,400,150,700]:[250,120,250],timestamp:Date.now(),actions:[{action:'open',title:'Ver gráfico'}],data:{a}};
+      const o={body,tag:tag||'corazonada',renotify:true,requireInteraction:urgent,icon:'icon-512.png',badge:'badge.png',vibrate:urgent?[400,150,400,150,700]:[250,120,250],timestamp:Date.now(),actions:[{action:'open',title:'Ver gráfico'}],data:{a}};
       if(reg)reg.showNotification(title,o);else new Notification(title,{body,tag});
     }
   }catch(e){}
@@ -690,7 +727,7 @@ function maybeAlert(st,tf,A){
 }
 let watchN=0;
 async function watchTick(){
-  watchN++;
+  watchN++;portCheck().catch(()=>{});
   for(const st of stars()){
     if(st.cat!=='crypto'&&(!CFG.td||watchN%10!==1))continue;
     for(const tf of CFG.alertTfs){
@@ -802,9 +839,66 @@ const MODEL={largo:{SPY:30,QQQ:15,MSFT:10,AAPL:10,GOOGL:8,KO:7,MELI:8,GLD:6,EWZ:
 function renderPort(){
   const p=LS.get('port',{}),P=PROF();
   $('#pAmt').value=p.amt||P.amt||'';$('#pMk').value=p.mk||((P.mk||[])[0]==='acciones'?'stocks':'crypto');$('#pHz').value=p.hz||({corto:'corto',largo:'largo'}[P.hz]||'mixto');
-  const m=entries();
-  $('#eList').innerHTML=Object.keys(m).map(k=>{const[c,sy]=k.split('|');return`<div class="row" data-cat="${c}" data-s="${sy}"><div class="grow"><b>${disp(c,sy)}</b> <span class="mut">${buys(k).length>1?buys(k).length+' compras · prom.':'compra en'} ${fp(avgBuy(k))}</span></div><span class="badge b-run">Ver ›</span></div>`}).join('')||'<small>Tocá 💰 en el gráfico para anotar el precio al que compraste.</small>';
+  renderBuys();pxLoad(Object.keys(entries()).filter(k=>buys(k).length)).then(renderBuys);
 }
+/*BUYS_START*/
+const CATN={crypto:'Criptomonedas',cedears:'CEDEARs',stocks:'Acciones',etfs:'ETFs'},CATC={crypto:'#2962ff',cedears:'#f5a623',stocks:'#a371f7',etfs:'#26c6da'};
+let PX=LS.get('px',{}),pxBusy=false;
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fu=x=>x.toLocaleString('es-AR',{maximumFractionDigits:2});
+const fsg=x=>(x>=0?'+':'−')+fu(Math.abs(x));
+async function pxLoad(keys){
+  if(pxBusy||!keys.length)return;pxBusy=true;
+  try{
+    const now=Date.now(),fresh=k=>PX[k]&&now-PX[k].t<(k.startsWith('crypto|')?45e3:300e3),need=keys.filter(k=>!fresh(k));
+    const cr=need.filter(k=>k.startsWith('crypto|'));
+    if(cr.length){try{const arr=await bfetch('/api/v3/ticker/price'),m={};arr.forEach(x=>m[x.symbol]=+x.price);cr.forEach(k=>{const p=m[k.split('|')[1]];if(p>0)PX[k]={p,t:Date.now()}})}catch(e){}renderBuys()}
+    const st=need.filter(k=>!k.startsWith('crypto|'));
+    if(st.length&&CFG.td){
+      const syms=[...new Set(st.map(k=>k.split('|')[1]))];
+      for(let i=0;i<syms.length;i+=8){
+        if(i>0)await sleep(61000);
+        const ch=syms.slice(i,i+8);
+        try{
+          const j=await tdFetch('https://api.twelvedata.com/price?symbol='+ch.map(encodeURIComponent).join(',')+'&apikey='+CFG.td);
+          ch.forEach(sy=>{const o=ch.length===1?j:j[sy],p=o&&+o.price;if(p>0)st.filter(k=>k.split('|')[1]===sy).forEach(k=>PX[k]={p,t:Date.now()})});
+        }catch(e){}
+        renderBuys();
+      }
+    }
+    LS.set('px',PX);
+  }finally{pxBusy=false}
+}
+function renderBuys(){
+  const keys=Object.keys(entries()).filter(k=>buys(k).length);
+  if(!keys.length){$('#eSum').innerHTML='';$('#eList').innerHTML='<small>Tocá 💰 en el gráfico para anotar el precio al que compraste.</small>';return}
+  const G={};
+  keys.forEach(k=>{
+    const[c,sy]=k.split('|'),a=buys(k),cur=PX[k]&&PX[k].p,av=avgBuy(k),wa=a.filter(x=>x.amt>0),inv=wa.reduce((t,x)=>t+x.amt,0);
+    const pl=cur&&inv>0?wa.reduce((t,x)=>t+x.amt*(cur/x.price-1),0):null,pct=cur&&av?(cur-av)/av*100:null;
+    (G[c]=G[c]||[]).push({c,sy,n:a.length,nn:a.length-wa.length,inv,pl,pct,cur,av});
+  });
+  const order=['crypto','cedears','stocks','etfs'],cats=[...order.filter(c=>G[c]),...Object.keys(G).filter(c=>!order.includes(c))];
+  const sum=rows=>{const inv=rows.reduce((t,x)=>t+x.inv,0),w=rows.filter(x=>x.pl!=null),ip=w.reduce((t,x)=>t+x.inv,0),pl=w.reduce((t,x)=>t+x.pl,0);return{inv,pl:ip>0?pl:null,pct:ip>0?pl/ip*100:null}};
+  const T={},all=[];cats.forEach(c=>{T[c]=sum(G[c]);all.push(...G[c])});
+  const tot=sum(all),cls=v=>v>=0?'up':'dn';
+  let h='';
+  if(tot.inv>0){
+    const R=48,C=2*Math.PI*R,cs=cats.filter(c=>T[c].inv>0);let off=0;
+    const seg=cs.map(c=>{const len=T[c].inv/tot.inv*C,d=Math.max(0.5,len-(cs.length>1?2:0)),o=`<circle r="${R}" cx="60" cy="60" fill="none" stroke="${CATC[c]||'#787b86'}" stroke-width="16" stroke-dasharray="${d} ${C}" stroke-dashoffset="${-off}"/>`;off+=len;return o}).join('');
+    h+=`<div class="card"><div style="display:flex;gap:12px;align-items:center"><div class="dnut"><svg viewBox="0 0 120 120" width="132" height="132"><circle r="${R}" cx="60" cy="60" fill="none" stroke="#1c2030" stroke-width="16"/>${seg}</svg><div class="dnut-c"><small>Invertido</small><b style="font-size:15px">${fu(tot.inv)}</b><small>USDT</small>${tot.pct!=null?`<b class="${cls(tot.pct)}" style="font-size:13px">${fpct(tot.pct)}</b>`:''}</div></div><div style="flex:1;min-width:0">${cs.map(c=>`<div class="lg"><i style="background:${CATC[c]||'#787b86'}"></i><div><b>${CATN[c]||c}</b> <span class="mut">${Math.round(T[c].inv/tot.inv*100)}%</span><br><small>${fu(T[c].inv)} USDT</small></div></div>`).join('')}</div></div>`;
+    h+=`<div class="row" style="border:0;padding:10px 0 0"><div class="grow"><b>Resultado total</b></div><div style="text-align:right">${tot.pl!=null?`<b class="${cls(tot.pl)}">${fsg(tot.pl)} USDT</b> <span class="${cls(tot.pl)}">(${fpct(tot.pct)})</span>`:'<span class="mut">Cargando precios…</span>'}</div></div></div>`;
+  }else h+='<div class="card"><small>Agregá el monto en USDT de tus compras (botón 💰 del gráfico) para ver el total invertido, el reparto y las ganancias en USDT.</small></div>';
+  cats.forEach(c=>{
+    const t=T[c];
+    h+=`<div class="gh"><b>${CATN[c]||c}</b><span class="mut">${t.inv>0?fu(t.inv)+' USDT':''}${t.pct!=null?` · <b class="${cls(t.pct)}">${fpct(t.pct)}</b>`:''}</span></div>`;
+    h+=G[c].sort((x,y)=>y.inv-x.inv).map(x=>`<div class="row" data-cat="${x.c}" data-s="${esc(x.sy)}"><div class="grow"><b>${esc(disp(x.c,x.sy))}</b> <span class="mut">${x.n} ${x.n>1?'compras':'compra'}</span><br><small>${x.inv>0?'Invertido '+fu(x.inv)+' USDT · ':''}prom. ${fp(x.av)}${x.cur?' · ahora '+fp(x.cur):' · sin precio'}${x.nn?' · '+x.nn+' sin monto':''}</small></div><div style="text-align:right">${x.pct!=null?`<b class="${cls(x.pct)}">${fpct(x.pct)}</b>`:'<span class="mut">—</span>'}${x.pl!=null?`<br><small class="${cls(x.pl)}">${fsg(x.pl)} USDT</small>`:''}</div></div>`).join('');
+  });
+  if(keys.some(k=>!k.startsWith('crypto|'))&&!CFG.td)h+='<p><small>Para ver la ganancia de acciones, ETFs y CEDEARs cargá tu clave de Twelve Data en Ajustes. Los CEDEARs se valúan por el activo de EE.UU. que representan.</small></p>';
+  h+='<p><small>La ganancia en USDT solo cuenta las compras con monto. Los precios se actualizan al abrir esta pantalla.</small></p>';
+  $('#eSum').innerHTML='';$('#eList').innerHTML=h;
+}
+/*BUYS_END*/
 $('#pGo').onclick=async()=>{
   const amt=+$('#pAmt').value,mk=$('#pMk').value,hz=$('#pHz').value;
   if(!(amt>0)){toast('Poné cuánto vas a invertir');return}
@@ -824,16 +918,190 @@ $('#pGo').onclick=async()=>{
   $('#pWatch').onclick=()=>{const l=stars();rows.forEach(r=>{if(!l.some(x=>x.sym===r.sym&&x.cat===cat))l.push({cat,sym:r.sym})});LS.set('stars',l);updateStar();toast('Vigilando '+rows.length+' activos')};
 };
 $('#pOut').onclick=$('#eList').onclick=e=>{const r=e.target.closest('.row[data-s]');if(r)openAsset(r.dataset.cat,r.dataset.s)};
-function drawEnt(){const a=buys(ek());$('#entL').innerHTML=a.map((x,i)=>`<div class="row"><div class="grow"><b>Compra ${i+1}</b> <span class="mut">${fp(x.price)}${x.amt?' · '+fp(x.amt):''}</span></div><button class="chip" data-d="${i}">Quitar</button></div>`).join('')+(a.length>1?`<div class="row"><div class="grow"><b>Promedio</b> <span class="mut">${fp(avgBuy(ek()))}</span></div></div>`:'')}
+function drawEnt(){const a=buys(ek());$('#entL').innerHTML=a.map((x,i)=>`<div class="row"><div class="grow"><b>Compra ${i+1}</b> <span class="mut">${fp(x.price)}${x.amt?' · '+fp(x.amt)+' USDT':' · sin monto'}</span></div><button class="chip" data-d="${i}">Quitar</button></div>`).join('')+(a.length>1?`<div class="row"><div class="grow"><b>Promedio</b> <span class="mut">${fp(avgBuy(ek()))}</span></div></div>`:'')}
 const entRefresh=()=>{drawEnt();drawEntry();renderInfo()};
 $('#buyBtn').onclick=()=>{const l=S.candles[S.candles.length-1];$('#entT').textContent='Mis compras de '+disp(S.cat,S.sym);$('#entP').value=l?l.close:'';$('#entA').value='';drawEnt();$('#ent').style.display='block'};
 $('#ent').onclick=e=>{if(e.target.id==='ent')$('#ent').style.display='none'};
-$('#entOk').onclick=()=>{const v=parseFloat($('#entP').value),m=parseFloat($('#entA').value);if(!(v>0)){toast('Poné un precio válido');return}const a=buys(ek());a.push({price:v,amt:m>0?m:0,t:Date.now()});setBuys(ek(),a);$('#entA').value='';entRefresh()};
+$('#entOk').onclick=()=>{const v=parseFloat($('#entP').value),m=parseFloat($('#entA').value);if(!(v>0)){toast('Poné un precio válido');return}const a=buys(ek());a.push({price:v,amt:m>0?m:0,t:Date.now()});setBuys(ek(),a);$('#entA').value='';$('#ent').style.display='none';entRefresh();toast('Compra agregada: '+fp(v)+(m>0?' · '+fu(m)+' USDT':''))};
 $('#entL').onclick=e=>{const b=e.target.closest('[data-d]');if(!b)return;const a=buys(ek());a.splice(+b.dataset.d,1);setBuys(ek(),a);entRefresh()};
 $('#entX').onclick=()=>{$('#ent').style.display='none'};
 
+/* ---------- mejoras: Hoy, respaldo, avisos, ventas, pesos, meta ---------- */
+const BK=['entries','sales','stars','cfg','profile','goal','palerts','port','fx','custom_stocks','custom_etfs','custom_cedears'];
+const fxRate=()=>+(LS.get('fx',{}).rate)||0;
+function phraseOf(zone,stage){
+  if(stage==='breakdown')return'Esperar: cae con fuerza';
+  if(stage==='breakup')return'No perseguir: sube con fuerza';
+  if(zone==='buy'||stage==='buy-in')return'Comprar de a poco';
+  if(zone==='sell'||stage==='sell-in')return'Tomar ganancias';
+  return{'buy-near':'Esperar: se acerca a zona de compra','sell-near':'Esperar: se acerca a zona de venta'}[stage]||'Esperar';
+}
+const semOf=h=>h.zone==='buy'?'🟢':h.zone==='sell'?'🔴':'🟡';
+const sales=()=>LS.get('sales',[]);
+function portTot(){
+  let inv=0,val=0,ok=true;
+  Object.keys(entries()).forEach(k=>{const cur=PX[k]&&PX[k].p;buys(k).filter(x=>x.amt>0).forEach(x=>{inv+=x.amt;if(cur)val+=x.amt*cur/x.price;else{val+=x.amt;ok=false}})});
+  return{inv,val,pl:val-inv,real:sales().reduce((t,x)=>t+(x.gain||0),0),ok};
+}
+function goalHTML(){
+  const g=LS.get('goal',{});if(!(g.target>0))return'';
+  const T=portTot(),have=T.val+T.real+(g.extra||0),pct=Math.max(0,Math.min(100,have/g.target*100)),miss=Math.max(0,g.target-have),r=fxRate();
+  return`<div class="xc"><b>🚢 ${esc(g.name||'Mi meta')}</b><div class="bar"><i style="width:${pct}%;background:var(--up)"></i></div><small>Llevás <b>${fu(have)}</b> de ${fu(g.target)} USDT (${pct.toFixed(0)}%)${miss>0?' · faltan '+fu(miss)+(r?' ≈ $'+fu(miss*r):''):' · ¡meta lograda! 🎉'}</small></div>`;
+}
+function renderExtra(){
+  const T=portTot(),r=fxRate(),cl=v=>v>=0?'up':'dn';
+  $('#goalOut').innerHTML=goalHTML()||'<small>Poné cuánto necesitás y te muestro cuánto llevás (valor de tu cartera + ganancias cobradas + ahorro aparte).</small>';
+  $('#fxOut').innerHTML=T.inv>0?(r?`<div class="xc">Cartera: <b>${fu(T.val)} USDT ≈ $${fu(T.val*r)}</b><br>Ganancia sin vender: <b class="${cl(T.pl)}">${fsg(T.pl*r)} $</b> · Cobrada: <b class="${cl(T.real)}">${fsg(T.real*r)} $</b></div>`:'<small>Elegí un dólar o escribí el valor para ver tu cartera en pesos.</small>'):'<small>Cuando anotes compras con monto, las vas a ver también en pesos.</small>';
+  const l=sales();
+  $('#saleOut').innerHTML=(l.length?`<div class="xc">Ganancia realizada: <b class="${cl(T.real)}">${fsg(T.real)} USDT</b>${r?' ≈ '+fsg(T.real*r)+' $':''}</div>`+l.map((x,i)=>({x,i})).reverse().map(({x,i})=>{const[c,sy]=x.k.split('|');return`<div class="row"><div class="grow"><b>${esc(disp(c,sy))}</b> <span class="mut">${new Date(x.t).toLocaleDateString('es-AR')}</span><br><small>Vendiste ${fu(x.amt)} USDT a ${fp(x.price)}${x.gain!=null?' · <b class="'+cl(x.gain)+'">'+fsg(x.gain)+' USDT</b> (prom. '+fp(x.av)+')':' · sin compra anotada'}</small></div><button class="chip" data-sd="${i}">Quitar</button></div>`}).join(''):'<small>Todavía no registraste ventas. Tocá 💰 en el gráfico, poné el precio y los USDT que vendiste y tocá "Registrar venta". Dejá la compra anotada: la app suma solo la ganancia cobrada.</small>');
+}
+{const _rb=renderBuys;renderBuys=function(){_rb();renderExtra()}}
+{const _rp=renderPort;renderPort=function(){
+  _rp();const g=LS.get('goal',{}),f=LS.get('fx',{kind:'blue'});
+  $('#gName').value=g.name||'';$('#gTarget').value=g.target||'';$('#gExtra').value=g.extra||'';$('#fxKind').value=f.kind||'blue';$('#fxRate').value=f.rate||'';
+  if(f.kind&&f.kind!=='manual'&&Date.now()-(f.t||0)>36e5)fxFetch(f.kind).then(v=>{if(v){f.rate=v;f.t=Date.now();LS.set('fx',f);$('#fxRate').value=v;renderExtra()}});
+  else if(!f.kind)fxFetch('blue').then(v=>{if(v){LS.set('fx',{kind:'blue',rate:v,t:Date.now()});$('#fxRate').value=v;renderExtra()}});
+  renderExtra();
+}}
+const saveGoal=()=>{LS.set('goal',{name:$('#gName').value.trim(),target:+$('#gTarget').value||0,extra:+$('#gExtra').value||0});renderExtra();toast('Guardado ✓')};
+['#gName','#gTarget','#gExtra'].forEach(i=>$(i).onchange=saveGoal);
+async function fxFetch(kind){try{const j=await(await fetch('https://dolarapi.com/v1/dolares')).json();const o=j.find(x=>x.casa===kind);if(o&&o.venta>0)return o.venta}catch(e){}return null}
+$('#fxKind').onchange=async()=>{const kind=$('#fxKind').value,f=LS.get('fx',{});f.kind=kind;if(kind!=='manual'){const v=await fxFetch(kind);if(v){f.rate=v;f.t=Date.now();$('#fxRate').value=v}else toast('No pude traer el dólar: escribilo a mano')}LS.set('fx',f);renderExtra()};
+$('#fxRate').onchange=()=>{LS.set('fx',{kind:'manual',rate:+$('#fxRate').value||0,t:Date.now()});$('#fxKind').value='manual';renderExtra()};
+$('#saleOut').onclick=e=>{const b=e.target.closest('[data-sd]');if(!b)return;const l=sales();l.splice(+b.dataset.sd,1);LS.set('sales',l);renderExtra()};
+
+/* plan de compra en partes + ventas + alertas de precio (ventana 💰) */
+let PLAN=[];
+function drawPlan(){
+  const A=S.A,box=$('#entPlan'),b=+$('#entB').value||0;PLAN=[];
+  if(!A||!A.Z){box.innerHTML='';return}
+  const Z=A.Z,live=A.live,sups=Z.z.sup.filter(q=>q.level<live*0.995).sort((x,y)=>y.level-x.level).slice(0,3);
+  if(Z.zone==='buy'||!sups.length)PLAN.push({level:live,lab:'Ahora'});
+  sups.forEach(q=>PLAN.push({level:q.level,lab:'Zona '+fp(q.level)+' '+'★'.repeat(q.stars||1)}));
+  const W={1:[100],2:[50,50],3:[40,30,30],4:[30,25,25,20]}[PLAN.length];
+  PLAN.forEach((p,i)=>{p.w=W[i];p.amt=b>0?Math.round(b*W[i])/100:0});
+  box.innerHTML=PLAN.map((p,i)=>`<div class="plan"><div class="grow"><b>Parte ${i+1}</b> · ${p.w}%<br><small>${p.lab}${p.amt?' · '+fu(p.amt)+' USDT':''} · a ${fp(p.level)}</small></div><button class="chip" data-pp="${i}">Usar</button></div>`).join('')+'<small>Comprar de a partes baja el riesgo de entrar justo en el peor precio.</small>';
+}
+$('#entB').oninput=drawPlan;
+$('#entPlan').onclick=e=>{const b=e.target.closest('[data-pp]');if(!b)return;const p=PLAN[+b.dataset.pp];$('#entP').value=+p.level.toPrecision(6);$('#entA').value=p.amt||''};
+$('#buyBtn').addEventListener('click',()=>{const P=LS.get('port',{});$('#entB').value=(PROF().cur||'USD')==='USD'?(P.amt||PROF().amt||''):'';drawPlan()});
+$('#entSell').onclick=()=>{
+  const p=parseFloat($('#entP').value),m=parseFloat($('#entA').value);
+  if(!(p>0)||!(m>0)){toast('Poné el precio de venta y cuántos USDT vendiste');return}
+  const av=avgBuy(ek()),gain=av?m*(1-av/p):null,l=sales();
+  l.push({k:ek(),price:p,amt:m,av:av||null,gain,t:Date.now()});LS.set('sales',l);
+  $('#entA').value='';$('#ent').style.display='none';toast('Venta registrada ✓'+(gain!=null?' · resultado '+fsg(gain)+' USDT':''));
+};
+$('#entAl').onclick=()=>{
+  const p=parseFloat($('#entP').value),l=S.candles[S.candles.length-1];
+  if(!(p>0)||!l){toast('Poné el precio al que querés el aviso');return}
+  const dir=p>=l.close?'up':'down',al=LS.get('palerts',[]);al.push({cat:S.cat,sym:S.sym,price:p,dir,on:true,t:Date.now()});LS.set('palerts',al);
+  if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
+  $('#ent').style.display='none';toast(`Te aviso cuando ${disp(S.cat,S.sym)} ${dir==='up'?'suba a':'baje a'} ${fp(p)}`);
+};
+/* avisos de cartera y de precio */
+async function portCheck(){
+  const keys=Object.keys(entries()).filter(k=>buys(k).length),al=LS.get('palerts',[]),need=[...new Set([...keys,...al.filter(a=>a.on).map(a=>a.cat+'|'+a.sym)])];
+  if(!need.length)return;
+  await pxLoad(need.filter(k=>k.startsWith('crypto|')));
+  if(CFG.td&&watchN%10===1)pxLoad(need.filter(k=>!k.startsWith('crypto|')));
+  const price=k=>PX[k]&&Date.now()-PX[k].t<6e5?PX[k].p:null;
+  if(CFG.aPort){
+    const ps=LS.get('ps',{});
+    keys.forEach(k=>{
+      const p=price(k),av=avgBuy(k);if(!p||!av)return;
+      const pct=(p-av)/av*100,prev=ps[k]||'';let st=pct>=CFG.gain?'gain':pct<=-CFG.loss?'loss':'';
+      if(!st&&((prev==='gain'&&pct>CFG.gain/2)||(prev==='loss'&&pct<-CFG.loss/2)))st=prev;
+      if(st&&st!==prev){const[c,sy]=k.split('|'),n=disp(c,sy);
+        if(st==='gain')notify(`💰 ${n}: tu compra ya gana ${fpct(pct)}`,`Compraste en ${fp(av)} y hoy está en ${fp(p)}. Podés pensar en vender una parte para asegurar ganancia.`,k+'|g|'+Date.now(),k+'|1D');
+        else notify(`⚠️ ${n}: tu compra cae ${fpct(pct)}`,`Compraste en ${fp(av)} y hoy está en ${fp(p)}. Revisá si querés esperar o cortar la pérdida.`,k+'|l|'+Date.now(),k+'|1D');}
+      ps[k]=st;
+    });
+    LS.set('ps',ps);
+  }
+  let ch=false;
+  al.forEach(a=>{if(!a.on)return;const p=price(a.cat+'|'+a.sym);if(p&&((a.dir==='up'&&p>=a.price)||(a.dir==='down'&&p<=a.price))){a.on=false;ch=true;
+    notify(`🎯 ${disp(a.cat,a.sym)} llegó a ${fp(a.price)}`,`Ahora está en ${fp(p)}, como pediste.`,'pa|'+a.t,a.cat+'|'+a.sym+'|1D')}});
+  if(ch)LS.set('palerts',al);
+}
+/* ajustes: avisos y respaldo */
+{const _rc=renderCfg;renderCfg=function(){
+  _rc();$('#cPort').checked=CFG.aPort;$('#cGain').value=CFG.gain;$('#cLoss').value=CFG.loss;
+  const al=LS.get('palerts',[]);
+  $('#palList').innerHTML=al.length?al.map((a,i)=>`<div class="row"><div class="grow"><b>${esc(disp(a.cat,a.sym))}</b> ${a.dir==='up'?'≥':'≤'} ${fp(a.price)} <small>${a.on?'activa':'ya avisó'}</small></div><button class="chip" data-pd="${i}">Quitar</button></div>`).join(''):'<small>Todavía no tenés alertas.</small>';
+  bkState();
+}}
+num('#cGain','gain',1);num('#cLoss','loss',1);
+$('#cPort').onchange=()=>{CFG.aPort=$('#cPort').checked;saveCfg();toast('Guardado ✓')};
+$('#palList').onclick=e=>{const b=e.target.closest('[data-pd]');if(!b)return;const l=LS.get('palerts',[]);l.splice(+b.dataset.pd,1);LS.set('palerts',l);renderCfg()};
+function backupObj(){const o={app:'corazonada',v:1,t:Date.now(),data:{}};BK.forEach(k=>{const v=LS.get(k,undefined);if(v!==undefined)o.data[k]=v});if(o.data.cfg){o.data.cfg=Object.assign({},o.data.cfg);delete o.data.cfg.td}return o}
+function bkState(){const t=LS.get('lastBk',0);$('#bkInfo').textContent=t?'Último respaldo: '+new Date(t).toLocaleDateString('es-AR')+'. Tus datos viven solo en este celular: guardá un respaldo seguido.':'Todavía no hiciste ningún respaldo. Tus datos viven solo en este celular: si borrás los datos del navegador se pierden.'}
+$('#bkExp').onclick=async()=>{
+  const txt=JSON.stringify(backupObj(),null,1),name='corazonada-respaldo-'+new Date().toISOString().slice(0,10)+'.json';
+  try{const f=new File([txt],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Respaldo de Corazonada'});LS.set('lastBk',Date.now());bkState();return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();
+  LS.set('lastBk',Date.now());bkState();toast('Respaldo descargado ✓');
+};
+$('#bkCopy').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(backupObj()));LS.set('lastBk',Date.now());bkState();toast('Respaldo copiado: pegalo en una nota o mandátelo por mensaje')}catch(e){toast('No pude copiar; usá "Guardar archivo"')}};
+$('#bkFileB').onclick=()=>$('#bkFile').click();
+$('#bkFile').onchange=async()=>{const f=$('#bkFile').files[0];if(f)restoreBk(await f.text());$('#bkFile').value=''};
+$('#bkPaste').onclick=()=>{const t=prompt('Pegá acá el respaldo que copiaste');if(t)restoreBk(t)};
+function restoreBk(txt){
+  let o;try{o=JSON.parse(txt)}catch(e){toast('Ese texto no es un respaldo válido');return}
+  if(!o||(o.app!=='corazonada'&&o.app!=='radar')||!o.data||(o.data.entries&&typeof o.data.entries!=='object')||(o.data.stars&&!Array.isArray(o.data.stars))){toast('Eso no es un respaldo de Corazonada');return}
+  const n=Object.keys(o.data.entries||{}).length;
+  if(!confirm('Vas a reemplazar tus datos actuales por el respaldo ('+n+' activos con compras'+(o.t?', del '+new Date(o.t).toLocaleDateString('es-AR'):'')+'). ¿Seguir?'))return;
+  BK.forEach(k=>{if(k in o.data){if(k==='cfg')o.data.cfg=Object.assign({},DEF,o.data.cfg,{td:CFG.td});LS.set(k,o.data[k])}});
+  toast('Respaldo restaurado ✓');setTimeout(()=>location.reload(),800);
+}
+/* ayuda */
+const HELP=[['🟢 Zona de compra (línea verde, "soporte")','Precio donde la caída suele frenarse y rebotar. Más ★ y más toques = zona más fuerte.'],['🔴 Zona de venta (línea roja, "resistencia")','Precio donde la suba suele frenarse. Buen lugar para pensar en tomar ganancias.'],['Puntaje 0 a 100','Mezcla cercanía a una zona fuerte, Bandas de Bollinger, distancia al máximo y RSI. Más alto = mejor momento.'],['RSI','Mide si subió o cayó demasiado rápido. Bajo (menos de 40) suele ser "barato"; alto (más de 60), "caro".'],['Bandas de Bollinger (azules)','Rango normal del precio. Cerca de la banda de abajo = precio bajo para su rango.'],['Flecha BUY / SELL','Señal de cruce de medias móviles. Sirve de confirmación, no de orden.'],['Semáforo','🟢 en zona de compra · 🔴 en zona de venta · 🟡 esperar.']];
+const showHelp=()=>{$('#hpT').innerHTML=HELP.map(([t,d])=>`<p><b>${t}</b><br>${d}</p>`).join('')+'<small>Herramienta de apoyo, no una recomendación de inversión.</small>';$('#hp').style.display='block'};
+$('#hpX').onclick=()=>{$('#hp').style.display='none'};
+$('#info').onclick=e=>{if(e.target.closest('[data-help]'))showHelp()};
+/* pantalla Hoy */
+let HOY=LS.get('hoy',{}),hoyBusy=false;
+async function hoyLoad(){
+  if(hoyBusy)return;hoyBusy=true;
+  try{
+    const now=Date.now(),need=stars().filter(s=>{const h=HOY[s.cat+'|'+s.sym],ttl=s.cat==='crypto'?18e4:6e5;return(s.cat==='crypto'||CFG.td)&&(!h||now-h.t>ttl)});
+    const run=async s=>{try{const A=analyze(await getCandles(s.cat,s.sym,'1D',500),CFG);if(A.Z){HOY[s.cat+'|'+s.sym]={t:Date.now(),live:A.live,buy:A.Z.buy,sell:A.Z.sell,zone:A.Z.zone,stage:A.St.stage};LS.set('hoy',HOY);if($('#v-hoy').classList.contains('on'))renderHoy(true)}}catch(e){}};
+    const cr=need.filter(s=>s.cat==='crypto'),st=need.filter(s=>s.cat!=='crypto');let i=0;
+    await Promise.all(Array.from({length:4},async()=>{while(i<cr.length)await run(cr[i++])}));
+    for(const s of st)await run(s);
+  }finally{hoyBusy=false}
+}
+function renderHoy(skip){
+  const P=PROF(),rows=stars().map(s=>({s,h:HOY[s.cat+'|'+s.sym]})),ord=h=>!h?3:h.zone==='buy'?0:h.zone==='sell'?1:2;
+  rows.sort((a,b)=>ord(a.h)-ord(b.h));
+  const nb=rows.filter(r=>r.h&&r.h.zone==='buy').length,ns=rows.filter(r=>r.h&&r.h.zone==='sell').length,T=portTot(),r=fxRate(),cl=v=>v>=0?'up':'dn';
+  let h=`<div><b style="font-size:19px">${P.name?'Hola, '+esc(P.name):'Hoy'}</b><br><small>${new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})}</small></div>`;
+  h+=`<div class="xc">${rows.length?`🟢 <b>${nb}</b> en zona de compra · 🔴 <b>${ns}</b> en zona de venta<br><small>De tus ${rows.length} vigilados (temporalidad 1D)</small>`:'Todavía no vigilás nada. Abrí un gráfico y tocá la ☆ para ver acá qué hacer con cada activo.'}</div>`;
+  const lb=LS.get('lastBk',0);
+  if(T.inv>0&&(!lb||Date.now()-lb>2592e6))h+='<div class="xc" data-go="cfg" style="border-color:var(--warn)">💾 <b>Hacé un respaldo de tus compras</b><br><small>Si borrás los datos del navegador se pierden. Tocá acá para guardarlo.</small></div>';
+  if(T.inv>0)h+=`<div class="xc" data-go="port"><small>Mi cartera</small><br><b style="font-size:17px">${fu(T.val)} USDT</b>${r?` <span class="mut">≈ $${fu(T.val*r)}</span>`:''}<br><b class="${cl(T.pl)}">${fsg(T.pl)} USDT (${T.inv?fpct(T.pl/T.inv*100):''})</b>${T.ok?'':' <small>· cargando precios…</small>'}</div>`;
+  h+=goalHTML();
+  if(rows.length){
+    h+='<h3>Mis vigilados <small class="hp" data-help="1">¿qué significa?</small></h3>';
+    h+=rows.map(({s,h:x})=>{
+      const k=s.cat+'|'+s.sym,av=avgBuy(k),sy=esc(disp(s.cat,s.sym));
+      if(!x)return`<div class="row" data-cat="${s.cat}" data-s="${esc(s.sym)}"><span class="sem">⚪</span><div class="grow"><b>${sy}</b><br><small>${s.cat!=='crypto'&&!CFG.td?'Cargá tu clave de Twelve Data en Ajustes':'Analizando…'}</small></div></div>`;
+      return`<div class="row" data-cat="${s.cat}" data-s="${esc(s.sym)}"><span class="sem">${semOf(x)}</span><div class="grow"><b>${sy}</b> <span class="mut">★ ${fp(x.live)}</span><br><small>${phraseOf(x.zone,x.stage)} · Compra ${x.buy} · Venta ${x.sell}${av?' · Mi compra <b class="'+cl(x.live-av)+'">'+fpct((x.live-av)/av*100)+'</b>':''}</small></div><span class="mut">›</span></div>`;
+    }).join('');
+  }
+  $('#hoyBox').innerHTML=h+'<p><small>Herramienta de apoyo, no una recomendación de inversión.</small></p>';
+  if(!skip){hoyLoad();const ks=Object.keys(entries()).filter(k=>buys(k).length);if(ks.length)pxLoad(ks).then(()=>{if($('#v-hoy').classList.contains('on'))renderHoy(true)})}
+}
+$('#hoyBox').onclick=e=>{
+  if(e.target.closest('[data-help]')){showHelp();return}
+  const g=e.target.closest('[data-go]');if(g){showView(g.dataset.go);return}
+  const r=e.target.closest('.row[data-s]');if(r)openAsset(r.dataset.cat,r.dataset.s,'1D');
+};
+setInterval(()=>{if($('#v-hoy').classList.contains('on'))renderHoy()},120000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&$('#v-hoy').classList.contains('on'))renderHoy()});
+
 /* ---------- inicio ---------- */
-initChart();fillScTf();renderTfs();updateStar();loadChart();
+initChart();fillScTf();renderTfs();updateStar();showView('hoy');try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 if(!PROF().done)openOnb();
 pushSync(false);
 {const a=new URLSearchParams(location.search).get('a');if(a)openA(a)}
