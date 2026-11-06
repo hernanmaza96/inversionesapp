@@ -1,10 +1,10 @@
-const CACHE = 'radar-v3';
-const SHELL = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
+const CACHE = 'radar-v6';
+const SHELL = ['./', 'index.html', 'analysis.js', 'manifest.json', 'icon-512.png', 'badge.png'];
 const CDN = 'https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(SHELL).then(() => c.add(CDN).catch(() => {}))).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {}))).then(() => c.add(CDN).catch(() => {}))).then(() => self.skipWaiting())
   );
 });
 
@@ -20,7 +20,7 @@ self.addEventListener('activate', e => {
 // Los datos de mercado (Binance, CoinGecko, Twelve Data) nunca se guardan.
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  if (e.request.method !== 'GET') return;
+  if (e.request.method !== 'GET' || url.pathname.startsWith('/api/')) return;
   const mine = url.origin === location.origin || e.request.url === CDN;
   if (!mine) return;
   e.respondWith(
@@ -37,12 +37,21 @@ self.addEventListener('fetch', e => {
   );
 });
 
+self.addEventListener('push', e => {
+  let d = {}; try { d = e.data.json(); } catch (_) {}
+  const urgent = /^(🔻|🚀)/.test(d.title || '');
+  e.waitUntil(self.registration.showNotification(d.title || 'Radar de Mercado', {
+    body: d.body || '', tag: d.tag || 'radar', renotify: true, requireInteraction: urgent,
+    icon: 'icon-512.png', badge: 'badge.png', vibrate: urgent ? [400, 150, 400, 150, 700] : [250, 120, 250],
+    timestamp: Date.now(), actions: [{ action: 'open', title: 'Ver gráfico' }], data: { a: d.a }
+  }));
+});
+
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
-      for (const c of list) { if ('focus' in c) return c.focus(); }
-      return clients.openWindow('./');
-    })
-  );
+  const a = e.notification.data && e.notification.data.a;
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) { if ('focus' in c) { if (a) c.postMessage({ a }); return c.focus(); } }
+    return clients.openWindow('./' + (a ? '?a=' + encodeURIComponent(a) : ''));
+  }));
 });

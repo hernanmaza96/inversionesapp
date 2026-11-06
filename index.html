@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0e14">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-512.png">
 <title>Radar de Mercado</title>
 <style>
 :root{--bg:#0b0e14;--panel:#131722;--line:#2a2e39;--tx:#d1d4dc;--mut:#787b86;--up:#16c784;--dn:#ea3943;--acc:#2962ff;--warn:#f5a623}
@@ -57,6 +58,8 @@ small{color:var(--mut)}
 .b-sell{background:rgba(234,57,67,.18);color:var(--dn)}
 #resetBtn{position:absolute;right:74px;bottom:40px;z-index:6;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);font-size:20px;color:var(--tx);opacity:.92}
 #buyBtn{position:absolute;right:124px;bottom:40px;z-index:6;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);font-size:19px;opacity:.92}
+#inst{position:fixed;left:10px;right:10px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:30;display:none;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#nb{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 10px);background:#1e222d;border:1px solid var(--line);border-left:5px solid #2962ff;border-radius:10px;padding:12px 14px;z-index:35;display:none;font-size:13px;box-shadow:0 8px 28px rgba(0,0,0,.6)}
 #onb{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;display:none}
 </style>
 </head>
@@ -87,21 +90,23 @@ small{color:var(--mut)}
   </div></div>
   <div id="v-cfg" class="view"><div class="pad">
     <h3>Notificaciones</h3>
-    <div class="grid2"><button class="btn" id="notifBtn">Activar avisos</button><button class="btn sec" id="notifTest">Probar aviso</button></div>
+    <div class="grid2"><button class="btn" id="notifBtn">Activar avisos</button><button class="btn sec" id="notifTest">🔔 Probar aviso en la app</button></div>
+    <p><button class="btn sec" id="notifTest2" style="width:100%">📲 Probar con la app cerrada (llega en 10 s)</button></p>
     <small id="notifState"></small>
     <label>Avisar en estas temporalidades (para activos con ★)</label>
     <div id="alertTfs" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     <label><input id="cNear" type="checkbox" style="width:auto;margin-right:8px">Avisar cuando el precio se acerca a una zona</label>
     <label><input id="cBrk" type="checkbox" style="width:auto;margin-right:8px">Avisar cuando una zona se rompe con fuerza</label>
-    <p><button class="btn sec" id="myProf">Mi perfil</button></p>
+    <p><button class="btn sec" id="myProf">Mi perfil</button> <button class="btn sec" id="instBtn">📲 Instalar app</button></p>
     <label>Puntaje mínimo (0 a 100) para marcar una buena zona</label>
     <input id="cMin" type="number" step="1" min="10" max="100">
     <label>Zonas de compra y de venta a mostrar (por lado, de 1 a 10)</label>
     <input id="cZn" type="number" step="1" min="1" max="10">
-    <small>Te aviso cuando un activo entra en buena zona de compra o de venta. Los avisos funcionan con la app abierta o en segundo plano. Para recibirlos con la app cerrada hace falta el servidor de mails (siguiente etapa).</small>
+    <small>Te aviso cuando un activo entra en buena zona de compra o de venta. Si el servidor está activo (lo dice arriba, junto al permiso), los avisos llegan también con la app cerrada. Si no, solo con la app abierta o en segundo plano.</small>
     <h3>Acciones, ETFs y CEDEARs</h3>
     <label>Clave gratuita de Twelve Data (twelvedata.com)</label>
-    <input id="cTd" type="password" placeholder="Pegá tu API key" autocomplete="off">
+    <input id="cTd" type="text" placeholder="Pegá tu API key" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p><button class="btn" id="cTdSave" style="width:100%">Guardar y probar clave</button></p>
     <small>Plan gratis: 8 consultas por minuto, por eso el escáner de acciones es más lento. Sin clave solo funciona cripto. Los CEDEARs se analizan por la acción o ETF de EE.UU. que representan.</small>
     <h3>Indicador Buy Sell Signal</h3>
     <div class="grid2">
@@ -138,11 +143,15 @@ small{color:var(--mut)}
   <div id="sheetL"></div>
 </div></div>
 <div id="ent" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:25"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;max-height:80%;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:12px"><h3 id="entT" style="margin:0 0 8px"></h3><div id="entL"></div><label>Precio de esta compra</label><input id="entP" type="number" step="any" inputmode="decimal"><label>Monto invertido (opcional, mejora el promedio)</label><input id="entA" type="number" step="any" inputmode="decimal"><div class="grid2" style="margin-top:12px"><button class="btn sec" id="entX">Cerrar</button><button class="btn" id="entOk">Agregar compra</button></div></div></div>
-<div id="onb"><div class="pad" style="max-width:480px;margin:0 auto;padding-top:24px"><h2 style="margin:0 0 4px">Bienvenido a Radar</h2><small>Contanos un poco para personalizar los avisos. No pedimos DNI, mail ni datos bancarios: se guardan en tu teléfono.</small><label>Tu nombre (opcional)</label><input id="oName" maxlength="30" autocomplete="off"><div id="oGroups"></div><label>Cuánto pensás invertir</label><input id="oAmt" type="number" inputmode="decimal"><p><button class="btn" id="oGo" style="width:100%">Empezar</button></p></div></div>
+<div id="onb"><div class="pad" style="max-width:480px;margin:0 auto;padding-top:24px"><h2 style="margin:0 0 4px">Bienvenido a Radar</h2><small>Contanos un poco para personalizar los avisos. No pedimos DNI, mail ni datos bancarios: se guardan en tu teléfono. Si activás los avisos, tu nombre, los activos que vigilás y tus ajustes también se guardan en el servidor, solo para poder mandarte las notificaciones.</small><label>Tu nombre (opcional)</label><input id="oName" maxlength="30" autocomplete="off"><div id="oGroups"></div><label>Cuánto pensás invertir</label><input id="oAmt" type="number" inputmode="decimal"><p><button class="btn" id="oGo" style="width:100%">Empezar</button></p></div></div>
+<div id="inst"><span style="flex:1" id="instT"></span><button class="btn" id="instGo" style="padding:8px 14px">Instalar</button><button class="chip" id="instX">✕</button></div>
+<div id="ph" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:45"><div class="pad" style="position:absolute;left:12px;right:12px;top:10%;background:var(--bg);border:1px solid var(--line);border-radius:12px;max-height:80%;overflow:auto"><h3 style="margin:0 0 8px">Hay que permitir las notificaciones</h3><div id="phT" style="font-size:14px;line-height:1.5"></div><p><button class="btn" id="phX" style="width:100%">Entendido</button></p></div></div>
+<div id="nb"></div>
 <div id="toast"></div>
 
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <script>
+(function(root){
 /*PURE_START*/
 function ema(arr,p){const k=2/(p+1),out=new Array(arr.length).fill(null);let prev=null;for(let i=0;i<arr.length;i++){if(i<p-1)continue;if(prev===null){let s=0;for(let j=i-p+1;j<=i;j++)s+=arr[j];prev=s/p}else prev=arr[i]*k+prev*(1-k);out[i]=prev}return out}
 function sma(arr,p){const out=new Array(arr.length).fill(null);let s=0;for(let i=0;i<arr.length;i++){s+=arr[i];if(i>=p)s-=arr[i-p];if(i>=p-1)out[i]=s/p}return out}
@@ -330,10 +339,35 @@ function stageOf(closed,live,Z){
   return{stage,bear,bull,ref,tgt,A,vr};
 }
 /*PURE_END*/
+function fp(x){if(x==null||isNaN(x))return'—';const a=Math.abs(x),d=a>=1000?2:a>=1?3:a>=0.01?5:8;return x.toLocaleString('es-AR',{maximumFractionDigits:d})}
+function fpct(x){return(x>=0?'+':'')+x.toFixed(2)+'%'}
+function stageMsg(n,tf,A,o){
+  const S=A.St,Z=A.Z,q=S.ref,t=S.tgt,w=o.who?o.who+', ':'',lv=q?fp(q.level):'',at=q?'en '+lv:'cercana',
+   tg=t?fp(t.level)+' ('+fpct((t.level-A.live)/A.live*100)+')':'la próxima zona',
+   st=q?` y con stop bajo ${fp(q.level-0.5*S.A)}`:'',sp=q?`en ${lv} (${q.touches} toques)`:'cercano',
+   pl=o.entry?` Tu compra en ${fp(o.entry)}: ${fpct((A.live-o.entry)/o.entry*100)}.`:'',
+   vol=S.vr>1.3?' y volumen alto':'',p=`${tf}: ${fp(A.live)}`;
+  const T={
+   'buy-near':[`👀 ${n} se acerca a una zona de compra`,`${w}${p}, zona ${at}. Todavía no llegó: esperá a ver si frena y rebota.`],
+   'buy-in':[`🟢 ${n} está en zona de compra`,`${w}${p}, soporte ${sp}, puntaje ${Z.buy}/100. Si comprás, mejor en partes${st}.`],
+   'sell-near':[`👀 ${n} se acerca a una zona de venta`,`${w}${p}, zona ${at}. Si ya tenés, andá evaluando tomar ganancias.`],
+   'sell-in':[`🔴 ${n} está en zona de venta`,`${w}${p}, resistencia ${sp}, puntaje ${Z.sell}/100. Es una zona donde el precio suele frenarse.`],
+   'breakdown':[`🔻 ${n}: la caída tiene fuerza`,`${w}${p} · ${q?'Rompió '+lv:'Cae'} con velas grandes${vol} (fuerza ${S.bear}/100) y puede seguir bajando hasta ${tg}. Mejor esperar antes de comprar.`],
+   'breakup':[`🚀 ${n}: la suba tiene fuerza`,`${w}${p} · ${q?'Superó '+lv:'Sube'} con velas grandes${vol} (fuerza ${S.bull}/100) y puede seguir hasta ${tg}. Evitá perseguir el precio.`]
+  }[S.stage];
+  if(!T)return null;
+  const b=T[1]+pl;return[T[0],o.hi?b:b.split('. ')[0]+'.'+pl];
+}
+const API={ema,sma,bbands,atr,rsi,analyze,stageMsg,fp,fpct};
+if(typeof module==="object"&&module.exports)module.exports=API;else Object.assign(root,API);
+})(typeof self!=="undefined"?self:globalThis);
+</script>
+<script>
+
 
 /* ---------- utilidades ---------- */
 const $=s=>document.querySelector(s);
-const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}if(/^(stars|cfg|entries|profile)$/.test(k))syncSoon()}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const DEF={fast:5,slow:13,atr:14,slm:0.5,rr:3,confirm:true,swing:10,bbLen:20,bbMult:2,prox:0.5,minScore:55,zonesN:6,aNear:true,aBreak:true,alertTfs:['1D','1sem'],td:''};
 let CFG=Object.assign({},DEF,LS.get('cfg',{}));
@@ -341,8 +375,6 @@ const saveCfg=()=>LS.set('cfg',CFG);
 const TFS=[['1seg','1s','1s'],['1m','1m','1min'],['5m','5m','5min'],['15m','15m','15min'],['30m','30m','30min'],['1h','1h','1h'],['2h','2h','2h'],['4h','4h','4h'],['1D','1d','1day'],['1sem','1w','1week']];
 const tfObj=l=>TFS.find(t=>t[0]===l)||TFS[7];
 const TZ=-new Date().getTimezoneOffset()*60;
-function fp(x){if(x==null||isNaN(x))return'—';const a=Math.abs(x),d=a>=1000?2:a>=1?3:a>=0.01?5:8;return x.toLocaleString('es-AR',{maximumFractionDigits:d})}
-function fpct(x){return(x>=0?'+':'')+x.toFixed(2)+'%'}
 let toastT;
 function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',5000)}
 const disp=(cat,sym)=>cat==='crypto'?sym.replace(/USDT$/,''):sym;
@@ -558,6 +590,48 @@ $('#sheetL').onclick=e=>{
   $('#sheet').classList.remove('on');openAsset(shCat,r.dataset.s);
 };
 
+/* ---------- instalar la app ---------- */
+let instEv=null;
+const isStd=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+const iosDev=/iphone|ipad|ipod/i.test(navigator.userAgent);
+function showInst(){
+  if(isStd()||Date.now()-LS.get('instNo',0)<6048e5)return;
+  $('#instGo').style.display=instEv?'':'none';
+  $('#instT').textContent=instEv?'📲 Instalá Radar en tu celular y abrila como una app':'📲 Para instalar: en Safari tocá Compartir ⬆️ y "Agregar a pantalla de inicio"';
+  $('#inst').style.display='flex';
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;showInst()});
+window.addEventListener('appinstalled',()=>{instEv=null;$('#inst').style.display='none';toast('¡App instalada!')});
+async function doInstall(){
+  if(instEv){instEv.prompt();await instEv.userChoice;instEv=null;$('#inst').style.display='none'}
+  else toast(iosDev?'En Safari: Compartir ⬆️ → Agregar a pantalla de inicio':'En Chrome: menú ⋮ → Instalar app (o Agregar a pantalla de inicio)');
+}
+$('#instGo').onclick=doInstall;$('#instBtn').onclick=doInstall;
+$('#instX').onclick=()=>{LS.set('instNo',Date.now());$('#inst').style.display='none'};
+if(isStd())$('#instBtn').style.display='none';
+if(iosDev)setTimeout(showInst,2500);
+
+/* ---------- avisos con la app cerrada (servidor) ---------- */
+var pushOn=false,syncT;
+function syncSoon(){clearTimeout(syncT);syncT=setTimeout(()=>pushSync(false),1500)}
+const b64=x=>{const r=atob((x+'='.repeat((4-x.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))};
+async function pushSync(ask){
+  try{
+    if(!('serviceWorker' in navigator)||!('PushManager' in window)||!location.protocol.startsWith('http'))return false;
+    const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      if(!ask||Notification.permission!=='granted')return false;
+      const k=await(await fetch('/api/subscribe')).json();if(!k.key)return false;
+      sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(k.key)});
+    }
+    const cfg=Object.assign({},CFG);delete cfg.td;const avg={};Object.keys(entries()).forEach(k=>avg[k]=avgBuy(k));
+    const r=await fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sub:sub.toJSON(),profile:{name:PROF().name,exp:PROF().exp},stars:stars(),cfg,avg})});
+    pushOn=r.ok;return pushOn;
+  }catch(e){return false}
+}
+function openA(a){const[c,sy,t]=String(a).split('|');if(c&&sy)openAsset(c,sy,t)}
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.a)openA(e.data.a)});
+
 /* ---------- vigilados y alertas ---------- */
 const stars=()=>LS.get('stars',[]);
 function isStar(){return stars().some(s=>s.cat===S.cat&&s.sym===S.sym)}
@@ -567,34 +641,41 @@ $('#star').onclick=()=>{
   if(isStar())l=l.filter(s=>!(s.cat===S.cat&&s.sym===S.sym));else{l.push({cat:S.cat,sym:S.sym});toast('Vigilando '+disp(S.cat,S.sym)+'. Activá los avisos en Ajustes si todavía no lo hiciste.')}
   LS.set('stars',l);updateStar();
 };
-async function notify(title,body,tag){
-  toast(title+' — '+body);
+function showBanner(title,body,a){
+  const n=$('#nb'),c=/^🟢/.test(title)?'#26a69a':/^(🔴|🔻)/.test(title)?'#ef5350':/^🚀/.test(title)?'#42a5f5':/^👀/.test(title)?'#ffb74d':'#2962ff';
+  const t=document.createElement('b'),x=document.createElement('div'),q=document.createElement('span');t.style.fontSize='15px';t.textContent=title;x.textContent=body;q.textContent='✕';q.style.cssText='position:absolute;right:10px;top:6px;padding:6px 8px;color:var(--mut,#8b93a7)';q.onclick=e=>{e.stopPropagation();n.style.display='none'};n.style.position='fixed';n.style.paddingRight='34px';n.replaceChildren(t,x,q);
+  n.style.borderLeftColor=c;n.style.display='block';n.onclick=()=>{n.style.display='none';if(a)openA(a)};
+  clearTimeout(showBanner.t);showBanner.t=setTimeout(()=>{n.style.display='none'},9000);
+  try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
+}
+function swipeDismiss(el){
+  let x0=0,y0=0,dx=0,dy=0,on=false;
+  el.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;dx=dy=0;on=true;el.style.transition='none'},{passive:true});
+  el.addEventListener('touchmove',e=>{if(!on)return;const t=e.touches[0];dx=t.clientX-x0;dy=Math.min(t.clientY-y0,0);el.style.transform='translate('+dx+'px,'+dy+'px)';el.style.opacity=1-Math.min(1,Math.abs(dx)/300)},{passive:true});
+  el.addEventListener('touchend',()=>{
+    if(!on)return;on=false;el.style.transition='transform .2s,opacity .2s';
+    if(Math.abs(dx)>60||dy<-40){el.style.transform='translate('+(Math.abs(dx)>60?(dx>0?'110%':'-110%'):'0')+','+(dy<-40?'-130%':'0')+')';el.style.opacity=0;setTimeout(()=>{el.style.display='none';el.style.transition='none';el.style.transform='';el.style.opacity=1},220)}
+    else{el.style.transform='';el.style.opacity=1}
+  });
+}
+swipeDismiss($('#nb'));swipeDismiss($('#toast'));
+function permHelp(){
+  const loc=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  $('#phT').innerHTML='<p><b>Si usás la app instalada:</b><br>Ajustes del celular → Aplicaciones → Radar → Notificaciones → Permitir.</p><p><b>Si estás en Chrome:</b><br>tocá el ícono ⓘ (o el candado) al lado de la dirección → Permisos → Notificaciones → Permitir, y recargá la página.</p>'+(loc?'<p><b>Ojo:</b> estás en una copia local (localhost). Los avisos con la app cerrada solo funcionan en la app instalada desde tu link de Vercel.</p>':'');
+  $('#ph').style.display='block';
+}
+$('#phX').onclick=()=>{$('#ph').style.display='none'};
+async function notify(title,body,tag,a){
+  showBanner(title,body,a);
   try{
     if('Notification' in window&&Notification.permission==='granted'){
-      const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();
-      if(reg)reg.showNotification(title,{body,tag,icon:'icon-192.png',badge:'icon-192.png',vibrate:[200,100,200]});
-      else new Notification(title,{body,tag});
+      const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration(),urgent=/^(🔻|🚀)/.test(title);
+      const o={body,tag:tag||'radar',renotify:true,requireInteraction:urgent,icon:'icon-512.png',badge:'badge.png',vibrate:urgent?[400,150,400,150,700]:[250,120,250],timestamp:Date.now(),actions:[{action:'open',title:'Ver gráfico'}],data:{a}};
+      if(reg)reg.showNotification(title,o);else new Notification(title,{body,tag});
     }
   }catch(e){}
 }
 const PROF=()=>LS.get('profile',{});
-function stageMsg(n,tf,A,o){
-  const S=A.St,Z=A.Z,q=S.ref,t=S.tgt,w=o.who?o.who+', ':'',lv=q?fp(q.level):'',at=q?'en '+lv:'cercana',
-   tg=t?fp(t.level)+' ('+fpct((t.level-A.live)/A.live*100)+')':'la próxima zona',
-   st=q?` y con stop bajo ${fp(q.level-0.5*S.A)}`:'',sp=q?`en ${lv} (${q.touches} toques)`:'cercano',
-   pl=o.entry?` Tu compra en ${fp(o.entry)}: ${fpct((A.live-o.entry)/o.entry*100)}.`:'',
-   vol=S.vr>1.3?' y volumen alto':'',p=`${tf}: ${fp(A.live)}`;
-  const T={
-   'buy-near':[`👀 ${n} se acerca a una zona de compra`,`${w}${p}, zona ${at}. Todavía no llegó: esperá a ver si frena y rebota.`],
-   'buy-in':[`🟢 ${n} está en zona de compra`,`${w}${p}, soporte ${sp}, puntaje ${Z.buy}/100. Si comprás, mejor en partes${st}.`],
-   'sell-near':[`👀 ${n} se acerca a una zona de venta`,`${w}${p}, zona ${at}. Si ya tenés, andá evaluando tomar ganancias.`],
-   'sell-in':[`🔴 ${n} está en zona de venta`,`${w}${p}, resistencia ${sp}, puntaje ${Z.sell}/100. Es una zona donde el precio suele frenarse.`],
-   'breakdown':[`🔻 ${n}: la caída tiene fuerza`,`${w}${p} · ${q?'Rompió '+lv:'Cae'} con velas grandes${vol} (fuerza ${S.bear}/100) y puede seguir bajando hasta ${tg}. Mejor esperar antes de comprar.`],
-   'breakup':[`🚀 ${n}: la suba tiene fuerza`,`${w}${p} · ${q?'Superó '+lv:'Sube'} con velas grandes${vol} (fuerza ${S.bull}/100) y puede seguir hasta ${tg}. Evitá perseguir el precio.`]
-  }[S.stage];
-  if(!T)return null;
-  const b=T[1]+pl;return[T[0],o.hi?b:b.split('. ')[0]+'.'+pl];
-}
 function maybeAlert(st,tf,A){
   const S=A.St;if(!S)return;
   const zs=LS.get('zs',{}),zt=LS.get('zt',{}),k=[st.cat,st.sym,tf].join('|'),prev=zs[k];let g=S.stage;
@@ -605,7 +686,7 @@ function maybeAlert(st,tf,A){
   if(zt[k]&&Date.now()-zt[k]<cd&&!/^break/.test(g))return;
   zt[k]=Date.now();LS.set('zt',zt);
   const P=PROF(),m=stageMsg(disp(st.cat,st.sym),tf,A,{who:P.name,entry:avgBuy(st.cat+'|'+st.sym),hi:P.exp!=='intermedio'});
-  if(m)notify(m[0],m[1],k+'|'+g+'|'+Date.now());
+  if(m&&!pushOn)notify(m[0],m[1],k+'|'+g+'|'+Date.now(),k);
 }
 let watchN=0;
 async function watchTick(){
@@ -660,21 +741,46 @@ function renderCfg(){
   const l=stars();
   $('#starList').innerHTML=l.length?l.map((s,i)=>`<div class="row"><div class="grow"><b>${disp(s.cat,s.sym)}</b> <span class="mut">${s.cat}</span></div><button class="chip" data-rm="${i}">Quitar</button></div>`).join(''):'<small>Tocá la ☆ en el gráfico para vigilar un activo.</small>';
   const p='Notification' in window?Notification.permission:'no disponible';
-  $('#notifState').textContent='Permiso de notificaciones: '+({granted:'activado',denied:'bloqueado (habilitalo desde los ajustes del navegador)',default:'sin activar'}[p]||p);
+  $('#notifState').textContent='Permiso de notificaciones: '+({granted:'activado',denied:'bloqueado (tocá "Activar avisos" para ver cómo desbloquearlo)',default:'sin activar'}[p]||p)+(pushOn?' · avisos con la app cerrada: activos':'');
 }
-const num=(id,key,min,max)=>{$(id).onchange=()=>{const v=parseFloat($(id).value);if(v>=min&&(max==null||v<=max)){CFG[key]=v;saveCfg();if(S.candles.length)draw(false)}else $(id).value=CFG[key]}};
+const num=(id,key,min,max)=>{$(id).onchange=()=>{const v=parseFloat($(id).value);if(v>=min&&(max==null||v<=max)){CFG[key]=v;saveCfg();if(S.candles.length)draw(false);toast('Guardado ✓')}else{$(id).value=CFG[key];toast('Valor no válido')}}};
 num('#cMin','minScore',10,100);num('#cZn','zonesN',1,10);num('#cFast','fast',2);num('#cSlow','slow',3);num('#cAtr','atr',2);num('#cSlm','slm',0);num('#cRr','rr',0.5);num('#cSwing','swing',1);num('#cBbLen','bbLen',2);num('#cBbMult','bbMult',0.5);
-$('#cConf').onchange=()=>{CFG.confirm=$('#cConf').checked;saveCfg();if(S.candles.length)draw(false)};
-$('#cNear').onchange=()=>{CFG.aNear=$('#cNear').checked;saveCfg()};$('#cBrk').onchange=()=>{CFG.aBreak=$('#cBrk').checked;saveCfg()};$('#myProf').onclick=()=>openOnb();
-$('#cTd').onchange=()=>{CFG.td=$('#cTd').value.trim();saveCfg();toast(CFG.td?'Clave guardada':'Clave borrada')};
+$('#cConf').onchange=()=>{CFG.confirm=$('#cConf').checked;saveCfg();if(S.candles.length)draw(false);toast('Guardado ✓')};
+$('#cNear').onchange=()=>{CFG.aNear=$('#cNear').checked;saveCfg();toast('Guardado ✓')};$('#cBrk').onchange=()=>{CFG.aBreak=$('#cBrk').checked;saveCfg();toast('Guardado ✓')};$('#myProf').onclick=()=>openOnb();
+$('#cTd').oninput=()=>{CFG.td=$('#cTd').value.trim();saveCfg()};
+$('#cTdSave').onclick=async()=>{
+  const k=$('#cTd').value.trim();CFG.td=k;saveCfg();
+  if(!k){toast('Clave borrada');return}
+  toast('Probando la clave…');
+  try{const j=await(await fetch('https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&outputsize=1&apikey='+encodeURIComponent(k))).json();
+    toast(j.values?'Clave válida y guardada ✓':'La clave no funcionó: '+(j.message||'revisala'))}
+  catch(e){toast('Se guardó, pero no pude probarla (¿sin conexión?)')}
+};
 $('#alertTfs').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const t=b.dataset.a;CFG.alertTfs=CFG.alertTfs.includes(t)?CFG.alertTfs.filter(x=>x!==t):[...CFG.alertTfs,t];saveCfg();renderCfg()};
 $('#starList').onclick=e=>{const b=e.target.closest('[data-rm]');if(!b)return;const l=stars();l.splice(+b.dataset.rm,1);LS.set('stars',l);renderCfg();updateStar()};
 $('#notifBtn').onclick=async()=>{
   if(!('Notification' in window)){toast('Este navegador no soporta notificaciones');return}
-  await Notification.requestPermission();renderCfg();
+  if(Notification.permission==='denied'){permHelp();return}
+  const pr=await Notification.requestPermission();
+  if(pr!=='granted'){renderCfg();permHelp();return}
+  await pushSync(true);renderCfg();toast(pushOn?'Avisos con la app cerrada: activados':'Avisos activados (con la app abierta o en segundo plano)');
 };
-$('#notifTest').onclick=()=>notify('Radar de Mercado','Así te va a llegar un aviso de compra o venta.','test-'+Date.now());
-$('#cReset').onclick=()=>{const td=CFG.td,at=CFG.alertTfs;CFG=Object.assign({},DEF,{td,alertTfs:at});saveCfg();renderCfg();if(S.candles.length)draw(false)};
+$('#notifTest').onclick=async()=>{
+  if('Notification' in window&&Notification.permission==='default')await Notification.requestPermission();
+  if('Notification' in window&&Notification.permission==='denied')permHelp();
+  const w=PROF().name?PROF().name+', ':'';
+  notify('🟢 BTC está en zona de compra (prueba)',w+'1D: 76.228 · soporte en 76.311 (7 toques), puntaje 63/100. Si comprás, mejor en partes.','test-'+Date.now(),'crypto|BTCUSDT|1D');
+};
+$('#notifTest2').onclick=async()=>{
+  if(!('Notification' in window)){toast('Este navegador no soporta notificaciones');return}
+  if(Notification.permission==='denied'){permHelp();return}
+  if(Notification.permission!=='granted'){toast('Primero tocá "Activar avisos" y aceptá el permiso');return}
+  if(!await pushSync(true)){toast(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)?'Esta es una copia local: para probar con la app cerrada abrí la app instalada desde tu link de Vercel':'El servidor de avisos no está conectado todavía');return}
+  const sub=await(await navigator.serviceWorker.ready).pushManager.getSubscription();
+  fetch('/api/test',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({endpoint:sub.endpoint,delay:10})}).then(r=>r.json()).then(j=>{if(!j.ok)toast(j.error||'No se pudo mandar la prueba')}).catch(()=>{});
+  showBanner('⏳ Cerrá la app ahora','En unos 10 segundos te llega una notificación como cualquier otra, con la app cerrada.');
+};
+$('#cReset').onclick=()=>{const td=CFG.td,at=CFG.alertTfs;CFG=Object.assign({},DEF,{td,alertTfs:at});saveCfg();renderCfg();if(S.candles.length)draw(false);toast('Valores originales restaurados')};
 
 $('#resetBtn').onclick=()=>{chart.priceScale('right').applyOptions({autoScale:true});loadChart()};
 
@@ -688,8 +794,7 @@ $('#oGo').onclick=async()=>{
   ob.name=$('#oName').value.trim();ob.amt=$('#oAmt').value;ob.done=1;LS.set('profile',ob);
   CFG.minScore={conservador:65,moderado:55,arriesgado:48}[ob.risk];CFG.aNear=ob.risk!=='conservador';saveCfg();
   $('#onb').style.display='none';
-  try{if('Notification' in window&&Notification.permission==='default')await Notification.requestPermission()}catch(e){}
-  toast(ob.name?'¡Listo, '+ob.name+'!':'¡Listo!');
+  toast((ob.name?'¡Listo, '+ob.name+'! ':'¡Listo! ')+'Activá los avisos en Ajustes para recibir alertas.');
 };
 
 /* ---------- cartera y compras ---------- */
@@ -730,6 +835,8 @@ $('#entX').onclick=()=>{$('#ent').style.display='none'};
 /* ---------- inicio ---------- */
 initChart();fillScTf();renderTfs();updateStar();loadChart();
 if(!PROF().done)openOnb();
+pushSync(false);
+{const a=new URLSearchParams(location.search).get('a');if(a)openA(a)}
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
